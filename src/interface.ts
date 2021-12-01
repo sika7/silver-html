@@ -32,7 +32,7 @@ export interface silverHtmlPlugin {
   Comment?: CommentFunc;
   Elements?: ElementsFunc;
   Element?: ElementFunc;
-  Tag?: ElementFunc;
+  Tag?: TagFunc;
   Attribute?: AttributeFunc;
   AttributeList?: AttributeListFunc;
 }
