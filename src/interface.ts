@@ -1,5 +1,13 @@
+export interface TagFunc {
+  (tagName: string, level: number): string;
+}
+
 export interface ElementFunc {
-  (element: string, level: number): string;
+  (node: any, level: number): any;
+}
+
+export interface ElementsFunc {
+  (elements: any[], level: number): any[];
 }
 
 export interface AttributeFunc {
@@ -13,6 +21,8 @@ export interface CommentFunc {
 export interface silverHtmlPlugin {
   pluginName: string;
   Comment?: CommentFunc;
+  Elements?: ElementsFunc;
   Element?: ElementFunc;
+  Tag?: ElementFunc;
   Attribute?: AttributeFunc;
 }

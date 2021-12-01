@@ -22,8 +22,9 @@ function parse5NodeAdapter(
   plugin: silverHtmlPlugin,
   level: number = 0
 ) {
-  const { Element, Attribute } = plugin;
-  if (Element && node.tagName) node.tagName = Element(node.tagName, level);
+  const { Tag, Element, Attribute } = plugin;
+  if (Element) node = Element(node, level);
+  if (Tag && node.tagName) node.tagName = Tag(node.tagName, level);
   if (Attribute)
     node.attrs.map((attr) => Attribute(attr.name, attr.value, node.tagName));
   return node;
@@ -116,6 +117,10 @@ export default class silverHtml {
    */
   private childNodes(child: any, level: number) {
     if (!Array.isArray(child)) return child;
-    return child.map((node) => this.node(node, level + 1));
+    if (this.currentPlugin) {
+      const { Elements } = this.currentPlugin;
+      if (Elements) child = Elements([...child], level);
+    }
+    return child.map((node: any) => this.node(node, level + 1));
   }
 }
