@@ -36,7 +36,7 @@ export interface silverHtmlAttribute {
 
 export interface silverHtmlPlugin {
   pluginName: string;
-  Comment?: CommentFunc;
+  // Comment?: CommentFunc;
   Elements?: ElementsFunc;
   Element?: ElementFunc;
   Tag?: TagFunc;
