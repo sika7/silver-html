@@ -1,0 +1,74 @@
+{
+  "name": "@sika7/silver-html",
+  "version": "0.0.0",
+  "description": "this package is provides HTML recursive processing.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "tsc",
+    "start:dev": "tsc && node ./dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "html",
+    "parser",
+    "recursive processing"
+  ],
+  "author": "sika7 <91676209+sika7@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": "https://github.com/sika7/silver-html",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    },
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:jest/recommended"
+    ],
+    "rules": {
+      "jest/expect-expect": "off"
+    }
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 100
+      }
+    },
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.+(ts|tsx|js)",
+      "**/?(*.)+(spec|test).+(ts|tsx|js)"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
+  },
+  "dependencies": {
+    "parse5": "^6.0.1",
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@types/parse5": "^6.0.3",
+    "eslint": "^8.3.0",
+    "eslint-plugin-jest": "^25.3.0",
+    "jest": "^27.4.2",
+    "ts-jest": "^27.0.7"
+  }
+}
