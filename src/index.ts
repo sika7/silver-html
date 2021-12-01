@@ -1,7 +1,3 @@
-import silverHtmlMain from "./logic";
-
-export default silverHtmlMain
-
-export { silverHtml } from "./logic"
+export { silverHtml as default } from "./logic";
 
 export { silverHtmlConfig, silverHtmlPlugin, silverHtmlAttribute } from "./interface";
