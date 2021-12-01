@@ -3,7 +3,7 @@ export interface TagFunc {
 }
 
 export interface ElementFunc {
-  (node: any, level: number): any;
+  (node: silverHtmlElement, level: number): any;
 }
 
 export interface ElementsFunc {
@@ -11,7 +11,7 @@ export interface ElementsFunc {
 }
 
 export interface AttributeFunc {
-  (name: string, value: string, tagName: string): string;
+  (attribute: silverHtmlAttribute, tagName: string): silverHtmlAttribute;
 }
 
 export interface AttributeListFunc {
@@ -20,6 +20,13 @@ export interface AttributeListFunc {
 
 export interface CommentFunc {
   (comment: string, elements: string): string;
+}
+
+export interface silverHtmlElement {
+    nodeName: string;
+    tagName?: string;
+    attrs?: silverHtmlAttribute[];
+    childNodes?: silverHtmlElement[];
 }
 
 export interface silverHtmlAttribute {

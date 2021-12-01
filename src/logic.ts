@@ -24,7 +24,11 @@ export function implementsParse5Elemtnt(arg: any): arg is parse5.Element {
  * @param {silverHtmlPlugin} plugin
  * @param {number} level
  */
-function elementNode(node: any, plugin: silverHtmlPlugin, level: number) {
+export function elementNode(
+  node: any,
+  plugin: silverHtmlPlugin,
+  level: number
+) {
   // run plugin.
   node = parse5NodeAdapter(node, plugin, level);
   return node;
@@ -37,7 +41,7 @@ function elementNode(node: any, plugin: silverHtmlPlugin, level: number) {
  * @param {silverHtmlPlugin} plugin
  * @param {number} level
  */
-function childElementNodes(
+export function childElementNodes(
   child: any,
   plugin: silverHtmlPlugin,
   level: number
@@ -47,7 +51,9 @@ function childElementNodes(
     const { Elements } = plugin;
     if (Elements) child = Elements([...child], level);
   }
-  return child.map((node: any) => elementNode(node, plugin, level + 1));
+  return child
+    .map((node: any) => elementNode(node, plugin, level + 1))
+    .filter((node: any) => node !== null);
 }
 
 /**
@@ -60,14 +66,16 @@ export function parse5NodeAdapter(
 ) {
   if (implementsParse5Elemtnt(node)) {
     const { Tag, Element, AttributeList, Attribute } = plugin;
-    if (Element) node = Element(node, level);
+    if (Element) node = Element({ ...node }, level);
+    if (!node) return null;
     if (Tag && node.tagName) node.tagName = Tag(node.tagName, level);
     if (AttributeList && node.attrs)
       node.attrs = AttributeList([...node.attrs], node.tagName);
-    if (Attribute)
-      node.attrs.map((attr: parse5.Attribute) =>
-        Attribute(attr.name, attr.value, node.tagName)
+    if (Attribute && node.attrs) {
+      node.attrs = node.attrs.map((attr: parse5.Attribute) =>
+        Attribute(attr, node.tagName)
       );
+    }
     if (node.childNodes)
       node.childNodes = childElementNodes(node.childNodes, plugin, level);
   }
@@ -80,7 +88,7 @@ export function parse5NodeAdapter(
  * @param {string} html
  * @param {string} parserName
  */
-function parseHtml(html: string, parserName: string = "parse5") {
+export function parseHtml(html: string, parserName: string = "parse5") {
   if (parserName === "parse5") return parse5.parseFragment(html);
   throw new Error("not found parser.");
 }
@@ -92,7 +100,10 @@ function parseHtml(html: string, parserName: string = "parse5") {
  * @param {string} parserName
  * @returns {string}
  */
-function serializeNode(node: any, parserName: string = "parse5"): string {
+export function serializeNode(
+  node: any,
+  parserName: string = "parse5"
+): string {
   if (parserName === "parse5") return parse5.serialize(node);
   return "";
 }
