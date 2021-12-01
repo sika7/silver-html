@@ -23,15 +23,15 @@ export interface CommentFunc {
 }
 
 export interface silverHtmlElement {
-    nodeName: string;
-    tagName?: string;
-    attrs?: silverHtmlAttribute[];
-    childNodes?: silverHtmlElement[];
+  nodeName: string;
+  tagName?: string;
+  attrs?: silverHtmlAttribute[];
+  childNodes?: silverHtmlElement[];
 }
 
 export interface silverHtmlAttribute {
-  name: string
-  value: string
+  name: string;
+  value: string;
 }
 
 export interface silverHtmlPlugin {
@@ -44,5 +44,4 @@ export interface silverHtmlPlugin {
   AttributeList?: AttributeListFunc;
 }
 
-export interface silverHtmlConfig {
-}
+export interface silverHtmlConfig {}
