@@ -17,18 +17,57 @@ export function implementsParse5Elemtnt(arg: any): arg is parse5.Element {
   );
 }
 
-function parse5NodeAdapter(
-  node: parse5.Element,
+/**
+ * elementNode. // ノードを判定しpluginの処理を行う
+ *
+ * @param {any} node
+ * @param {silverHtmlPlugin} plugin
+ * @param {number} level
+ */
+function elementNode(node: any, plugin: silverHtmlPlugin, level: number) {
+  // run plugin.
+  node = parse5NodeAdapter(node, plugin, level);
+  return node;
+}
+
+/**
+ * childElementNodes.
+ *
+ * @param {any} child
+ * @param {silverHtmlPlugin} plugin
+ * @param {number} level
+ */
+function childElementNodes(
+  child: any,
+  plugin: silverHtmlPlugin,
+  level: number
+) {
+  if (!Array.isArray(child)) return child;
+  if (plugin) {
+    const { Elements } = plugin;
+    if (Elements) child = Elements([...child], level);
+  }
+  return child.map((node: any) => elementNode(node, plugin, level + 1));
+}
+
+export function parse5NodeAdapter(
+  node: any,
   plugin: silverHtmlPlugin,
   level: number = 0
 ) {
-  const { Tag, Element, AttributeList, Attribute } = plugin;
-  if (Element) node = Element(node, level);
-  if (Tag && node.tagName) node.tagName = Tag(node.tagName, level);
-  if (AttributeList && node.attrs)
-    node.attrs = AttributeList([...node.attrs], node.tagName);
-  if (Attribute)
-    node.attrs.map((attr) => Attribute(attr.name, attr.value, node.tagName));
+  if (implementsParse5Elemtnt(node)) {
+    const { Tag, Element, AttributeList, Attribute } = plugin;
+    if (Element) node = Element(node, level);
+    if (Tag && node.tagName) node.tagName = Tag(node.tagName, level);
+    if (AttributeList && node.attrs)
+      node.attrs = AttributeList([...node.attrs], node.tagName);
+    if (Attribute)
+      node.attrs.map((attr: parse5.Attribute) =>
+        Attribute(attr.name, attr.value, node.tagName)
+      );
+    if (node.childNodes)
+      node.childNodes = childElementNodes(node.childNodes, plugin, level);
+  }
   return node;
 }
 
@@ -45,7 +84,6 @@ export function silverHtml(
  */
 export default class silverHtmlMain {
   plugins: silverHtmlPlugin[] = [];
-  currentPlugin: silverHtmlPlugin | null = null;
   level: number = 0;
   html: string = "";
 
@@ -56,6 +94,7 @@ export default class silverHtmlMain {
    */
   constructor(plugin: silverHtmlPlugin[]) {
     this.plugins = plugin;
+    return this;
   }
 
   /**
@@ -91,46 +130,12 @@ export default class silverHtmlMain {
     this.plugins.map((plugin) => {
       this.level = 0;
       try {
-        this.currentPlugin = plugin;
-        node = this.node(node, 0);
+        node = elementNode(node, plugin, 0);
       } catch (e) {
         throw new Error(`${plugin.pluginName} plugin error.`);
       }
     });
     this.html = this.serializeNode(node);
     return this.html;
-  }
-
-  /**
-   * node. // ノードを判定しpluginの処理を行う
-   *
-   * @param {any} node
-   * @param {number} level
-   */
-  private node(node: any, level: number) {
-    // run plugin.
-    if (implementsParse5Elemtnt(node)) {
-      if (this.currentPlugin) {
-        node = parse5NodeAdapter(node, this.currentPlugin, level);
-      }
-      if (node.childNodes)
-        node.childNodes = this.childNodes(node.childNodes, level);
-    }
-    return node;
-  }
-
-  /**
-   * childNodes. // チャイルドノードを再帰的に処理する
-   *
-   * @param {any} child
-   * @param {number} level
-   */
-  private childNodes(child: any, level: number) {
-    if (!Array.isArray(child)) return child;
-    if (this.currentPlugin) {
-      const { Elements } = this.currentPlugin;
-      if (Elements) child = Elements([...child], level);
-    }
-    return child.map((node: any) => this.node(node, level + 1));
   }
 }
