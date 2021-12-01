@@ -105,7 +105,7 @@ export function serializeNode(
   parserName: string = "parse5"
 ): string {
   if (parserName === "parse5") return parse5.serialize(node);
-  return "";
+  throw new Error("not found serialize.");
 }
 
 /**

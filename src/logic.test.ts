@@ -18,6 +18,19 @@ describe("basic fucntion test.", () => {
     expect(result).toEqual("<div>test</div>");
   });
 
+  test("basic fucntion throw new Error.", () => {
+    expect(() =>
+      silverHtml("<div>test</div>", testConfig, [
+        {
+          pluginName: "hoge",
+          Tag: () => {
+            throw new Error("test error.");
+          },
+        },
+      ])
+    ).toThrow("hoge plugin error.");
+  });
+
   test("run test.", () => {
     const result = silverHtml(
       "<div><div>test</div><ul><li>list1</li><li>list2</li></ul></div>",
@@ -162,10 +175,21 @@ describe("internal function test.", () => {
     expect(result).toEqual(test);
   });
 
-  test("parse5 parse node. test parseHtml function.", () => {
+  test("test parseHtml function. for throw new Error", () => {
+    expect(() => parseHtml(`<div>test</div><div>test</div>`, "hoge")).toThrow(
+      "not found parser."
+    );
+  });
+
+  test("tset serializeNode function.", () => {
     const test = parse5.parseFragment(`<div>test</div><div>test</div>`);
     const result = serializeNode(test);
     expect(result).toEqual(`<div>test</div><div>test</div>`);
+  });
+
+  test("tset serializeNode function. for throw new Error", () => {
+    const test = parse5.parseFragment(`<div>test</div><div>test</div>`);
+    expect(() => serializeNode(test, "hoge")).toThrow("not found serialize.");
   });
 
   test("parse5NodeAdapter.", () => {
