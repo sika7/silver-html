@@ -36,3 +36,6 @@ export interface silverHtmlPlugin {
   Attribute?: AttributeFunc;
   AttributeList?: AttributeListFunc;
 }
+
+export interface silverHtmlConfig {
+}

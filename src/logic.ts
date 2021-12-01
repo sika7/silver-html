@@ -1,5 +1,5 @@
 import * as parse5 from "parse5";
-import { silverHtmlPlugin } from "./interface";
+import { silverHtmlConfig, silverHtmlPlugin } from "./interface";
 
 /**
  * implementsParse5Elemtnt.
@@ -32,10 +32,18 @@ function parse5NodeAdapter(
   return node;
 }
 
+export function silverHtml(
+  html: string,
+  config: silverHtmlConfig,
+  plugin: silverHtmlPlugin[]
+) {
+  return new silverHtmlMain(plugin).process(html, config);
+}
+
 /**
- * silverHtml.
+ * silverHtmlMain.
  */
-export default class silverHtml {
+export default class silverHtmlMain {
   plugins: silverHtmlPlugin[] = [];
   currentPlugin: silverHtmlPlugin | null = null;
   level: number = 0;
@@ -78,7 +86,7 @@ export default class silverHtml {
    *
    * @param {string} html
    */
-  public process(html: string) {
+  public process(html: string, config: silverHtmlConfig = {}) {
     let node = this.parseHtml(html);
     this.plugins.map((plugin) => {
       this.level = 0;
