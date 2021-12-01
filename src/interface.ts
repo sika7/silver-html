@@ -11,11 +11,20 @@ export interface ElementsFunc {
 }
 
 export interface AttributeFunc {
-  (name: string, value: string, elements: string): string;
+  (name: string, value: string, tagName: string): string;
+}
+
+export interface AttributeListFunc {
+  (attributes: silverHtmlAttribute[], tagName: string): silverHtmlAttribute[];
 }
 
 export interface CommentFunc {
   (comment: string, elements: string): string;
+}
+
+export interface silverHtmlAttribute {
+  name: string
+  value: string
 }
 
 export interface silverHtmlPlugin {
@@ -25,4 +34,5 @@ export interface silverHtmlPlugin {
   Element?: ElementFunc;
   Tag?: ElementFunc;
   Attribute?: AttributeFunc;
+  AttributeList?: AttributeListFunc;
 }

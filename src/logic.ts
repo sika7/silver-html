@@ -22,9 +22,11 @@ function parse5NodeAdapter(
   plugin: silverHtmlPlugin,
   level: number = 0
 ) {
-  const { Tag, Element, Attribute } = plugin;
+  const { Tag, Element, AttributeList, Attribute } = plugin;
   if (Element) node = Element(node, level);
   if (Tag && node.tagName) node.tagName = Tag(node.tagName, level);
+  if (AttributeList && node.attrs)
+    node.attrs = AttributeList([...node.attrs], node.tagName);
   if (Attribute)
     node.attrs.map((attr) => Attribute(attr.name, attr.value, node.tagName));
   return node;
