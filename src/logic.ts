@@ -53,9 +53,9 @@ export default class silverHtml {
    * @param {string} html
    * @param {string} parserName
    */
-  private parseHtml(html: string, parserName: string = 'parse5') {
-    if (parserName === 'parse5') return parse5.parseFragment(html)
-    throw new Error('not found parser.'); 
+  private parseHtml(html: string, parserName: string = "parse5") {
+    if (parserName === "parse5") return parse5.parseFragment(html);
+    throw new Error("not found parser.");
   }
 
   /**
@@ -65,9 +65,9 @@ export default class silverHtml {
    * @param {string} parserName
    * @returns {string}
    */
-  private serializeNode(node: any, parserName: string = 'parse5'): string {
-    if (parserName === 'parse5') return parse5.serialize(node)
-    return ""
+  private serializeNode(node: any, parserName: string = "parse5"): string {
+    if (parserName === "parse5") return parse5.serialize(node);
+    return "";
   }
 
   /**
@@ -78,12 +78,12 @@ export default class silverHtml {
   public process(html: string) {
     let node = this.parseHtml(html);
     this.plugins.map((plugin) => {
-      this.level = 0
+      this.level = 0;
       try {
         this.currentPlugin = plugin;
         node = this.node(node, 0);
       } catch (e) {
-        throw new Error(`${plugin.pluginName} plugin error.`)
+        throw new Error(`${plugin.pluginName} plugin error.`);
       }
     });
     this.html = this.serializeNode(node);
@@ -102,7 +102,8 @@ export default class silverHtml {
       if (this.currentPlugin) {
         node = parse5NodeAdapter(node, this.currentPlugin, level);
       }
-      if (node.childNodes) node.childNodes = this.childNodes(node.childNodes, level);
+      if (node.childNodes)
+        node.childNodes = this.childNodes(node.childNodes, level);
     }
     return node;
   }
