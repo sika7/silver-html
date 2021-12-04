@@ -1,5 +1,5 @@
 import * as parse5 from "parse5";
-import { silverHtmlConfig } from "./interface";
+import { SilverHtmlConfig, SilverHtmlElement } from "./interface";
 import {
   childElementNodes,
   elementNode,
@@ -10,7 +10,7 @@ import {
   silverHtml,
 } from "./logic";
 
-const testConfig: silverHtmlConfig = {};
+const testConfig: SilverHtmlConfig = {};
 
 describe("basic fucntion test.", () => {
   test("no change test.", () => {
@@ -23,7 +23,7 @@ describe("basic fucntion test.", () => {
       silverHtml("<div>test</div>", testConfig, [
         {
           pluginName: "hoge",
-          Tag: () => {
+          Element: () => {
             throw new Error("test error.");
           },
         },
@@ -38,32 +38,15 @@ describe("basic fucntion test.", () => {
       [
         {
           pluginName: "hoge",
-          Tag: () => "main",
-        },
-      ]
-    );
-    expect(result).toEqual(
-      "<main><main>test</main><main><main>list1</main><main>list2</main></main></main>"
-    );
-  });
-
-  test("Tag run test.", () => {
-    const result = silverHtml(
-      "<div><div>test</div><ul><li>list1</li><li>list2</li></ul></div>",
-      testConfig,
-      [
-        {
-          pluginName: "hoge",
-          Tag: (tagName) => {
-            if (tagName === "li") return "a";
-            if (tagName === "ul") return "p";
-            return tagName;
+          Element: (e) => {
+            e.tagName = "main"
+            return e
           },
         },
       ]
     );
     expect(result).toEqual(
-      "<div><div>test</div><p><a>list1</a><a>list2</a></p></div>"
+      "<main><main>test</main><main><main>list1</main><main>list2</main></main></main>"
     );
   });
 
@@ -74,7 +57,7 @@ describe("basic fucntion test.", () => {
       [
         {
           pluginName: "hoge",
-          Elements: (elements) =>
+          Elements: (elements: SilverHtmlElement[]) =>
             elements.filter((node) => node.tagName !== "li"),
         },
       ]
@@ -113,9 +96,9 @@ describe("basic fucntion test.", () => {
       [
         {
           pluginName: "hoge",
-          Element: (node) => {
-            if (node.tagName === "li") return null;
-            if (node.tagName === "ul") return null;
+          Element: (node: SilverHtmlElement) => {
+            // if (node.tagName === "li") return null;
+            // if (node.tagName === "ul") return null;
             return node;
           },
         },
@@ -192,34 +175,6 @@ describe("internal function test.", () => {
     expect(() => serializeNode(test, "hoge")).toThrow("not found serialize.");
   });
 
-  test("parse5NodeAdapter.", () => {
-    const result = parse5Node(`<div>test</div>`, (node: parse5.ChildNode) => {
-      return parse5NodeAdapter(
-        node,
-        {
-          pluginName: "hoge",
-          Tag: () => "hoge",
-        },
-        0
-      );
-    });
-    expect(result).toEqual("<hoge>test</hoge>");
-  });
-
-  test("test elementNode function.", () => {
-    const result = parse5Node(`<div>test</div>`, (node: parse5.ChildNode) => {
-      return elementNode(
-        node,
-        {
-          pluginName: "hoge",
-          Tag: () => "hoge",
-        },
-        0
-      );
-    });
-    expect(result).toEqual("<hoge>test</hoge>");
-  });
-
   test("test implementsParse5Elemtnt function.", () => {
     const result = silverHtml(
       `<div>
@@ -237,12 +192,8 @@ describe("internal function test.", () => {
           Elements: (e) => {
             return e
               .map((node) => {
-                if (implementsParse5Elemtnt(node)) {
-                  return node;
-                }
-                return null;
-              })
-              .filter((node) => node !== null);
+                return node;
+              });
           },
         },
       ]

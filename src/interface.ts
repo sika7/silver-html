@@ -1,47 +1,39 @@
-export interface TagFunc {
-  (tagName: string, level: number): string;
-}
+import * as parse5 from 'parse5'
 
 export interface ElementFunc {
-  (node: silverHtmlElement, level: number): any;
+  (node: SilverHtmlElement, level: number): SilverHtmlElement;
 }
 
 export interface ElementsFunc {
-  (elements: any[], level: number): any[];
+  (elements: SilverHtmlElement[], level: number): SilverHtmlElement[];
 }
 
 export interface AttributeFunc {
-  (attribute: silverHtmlAttribute, tagName: string): silverHtmlAttribute;
+  (attribute: SilverHtmlAttribute, tagName: string): SilverHtmlAttribute;
 }
 
 export interface AttributeListFunc {
-  (attributes: silverHtmlAttribute[], tagName: string): silverHtmlAttribute[];
+  (attributes: SilverHtmlAttribute[], tagName: string): SilverHtmlAttribute[];
 }
 
 export interface CommentFunc {
   (comment: string, elements: string): string;
 }
 
-export interface silverHtmlElement {
-  nodeName: string;
-  tagName?: string;
-  attrs?: silverHtmlAttribute[];
-  childNodes?: silverHtmlElement[];
-}
+export type SilverHtmlElement = parse5.Element
 
-export interface silverHtmlAttribute {
-  name: string;
-  value: string;
-}
+export type SilverHtmlAttribute = parse5.Attribute
 
-export interface silverHtmlPlugin {
+export type SilverHtmlNode = parse5.Node
+export type SilverHtmlChildNode = parse5.ChildNode
+
+export interface SilverHtmlPlugin {
   pluginName: string;
   // Comment?: CommentFunc;
   Elements?: ElementsFunc;
   Element?: ElementFunc;
-  Tag?: TagFunc;
   Attribute?: AttributeFunc;
   AttributeList?: AttributeListFunc;
 }
 
-export interface silverHtmlConfig {}
+export interface SilverHtmlConfig {}

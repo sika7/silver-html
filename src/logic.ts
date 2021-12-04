@@ -1,5 +1,5 @@
 import * as parse5 from "parse5";
-import { silverHtmlConfig, silverHtmlPlugin } from "./interface";
+import { SilverHtmlChildNode, SilverHtmlConfig, SilverHtmlNode, SilverHtmlPlugin } from "./interface";
 
 /**
  * implementsParse5Elemtnt.
@@ -17,16 +17,28 @@ export function implementsParse5Elemtnt(arg: any): arg is parse5.Element {
   );
 }
 
+function executeFunction<T>(item: T, func: Function): T {
+  return func(item)
+}
+
+function executeFunctions<T>(items: T[], func: Function): T[] {
+  return arrayNonNullable<T>(items.map(item => func(item)))
+}
+
+function arrayNonNullable<T>(items: T[]): T[] {
+  return items.filter((item: T): item is NonNullable<T> => item != null)
+}
+
 /**
  * elementNode. // ノードを判定しpluginの処理を行う
  *
- * @param {any} node
+ * @param {SilverHtmlNode} node
  * @param {silverHtmlPlugin} plugin
  * @param {number} level
  */
 export function elementNode(
-  node: any,
-  plugin: silverHtmlPlugin,
+  node: SilverHtmlNode,
+  plugin: SilverHtmlPlugin,
   level: number
 ) {
   // run plugin.
@@ -37,43 +49,37 @@ export function elementNode(
 /**
  * childElementNodes.
  *
- * @param {any} child
+ * @param {SilverHtmlNode} child
  * @param {silverHtmlPlugin} plugin
  * @param {number} level
  */
 export function childElementNodes(
-  child: any,
-  plugin: silverHtmlPlugin,
+  child: SilverHtmlChildNode[],
+  plugin: SilverHtmlPlugin,
   level: number
 ) {
   if (!Array.isArray(child)) return child;
-  if (plugin) {
-    const { Elements } = plugin;
-    if (Elements) child = Elements([...child], level);
-  }
-  return child
-    .map((node: any) => elementNode(node, plugin, level + 1))
-    .filter((node: any) => node !== null);
+  const { Elements } = plugin;
+  if (Elements) child = executeFunction<SilverHtmlChildNode[]>([...child], (items: any) => Elements(items, level));
+  return executeFunctions<SilverHtmlChildNode>(child, (node: any) => elementNode(node, plugin, level + 1));
 }
 
 /**
  * parse5NodeAdapter.
  */
 export function parse5NodeAdapter(
-  node: any,
-  plugin: silverHtmlPlugin,
+  node: SilverHtmlNode,
+  plugin: SilverHtmlPlugin,
   level: number = 0
 ) {
   if (implementsParse5Elemtnt(node)) {
-    const { Tag, Element, AttributeList, Attribute } = plugin;
-    if (Element) node = Element({ ...node }, level);
-    if (!node) return null;
-    if (Tag && node.tagName) node.tagName = Tag(node.tagName, level);
+    const { Element, AttributeList, Attribute} = plugin;
+    if (Element) node = executeFunction<parse5.Element>({ ...node }, (node: parse5.Element) => Element(node, level)) ;
     if (AttributeList && node.attrs)
       node.attrs = AttributeList([...node.attrs], node.tagName);
     if (Attribute && node.attrs) {
       node.attrs = node.attrs.map((attr: parse5.Attribute) =>
-        Attribute(attr, node.tagName)
+        Attribute(attr, node.nodeName)
       );
     }
     if (node.childNodes)
@@ -88,7 +94,7 @@ export function parse5NodeAdapter(
  * @param {string} html
  * @param {string} parserName
  */
-export function parseHtml(html: string, parserName: string = "parse5") {
+export function parseHtml(html: string, parserName: string = "parse5"): SilverHtmlNode {
   if (parserName === "parse5") return parse5.parseFragment(html);
   throw new Error("not found parser.");
 }
@@ -96,12 +102,12 @@ export function parseHtml(html: string, parserName: string = "parse5") {
 /**
  * serializeNode. // ノードからhtmlに変換する
  *
- * @param {any} node
+ * @param {SilverHtmlNode} node
  * @param {string} parserName
  * @returns {string}
  */
 export function serializeNode(
-  node: any,
+  node: SilverHtmlNode,
   parserName: string = "parse5"
 ): string {
   if (parserName === "parse5") return parse5.serialize(node);
@@ -113,8 +119,8 @@ export function serializeNode(
  */
 export function silverHtml(
   html: string,
-  config: silverHtmlConfig,
-  plugins: silverHtmlPlugin[]
+  config: SilverHtmlConfig,
+  plugins: SilverHtmlPlugin[]
 ) {
   let node = parseHtml(html);
   plugins.map((plugin) => {
