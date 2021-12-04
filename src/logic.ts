@@ -48,10 +48,22 @@ export function implementsParse5Comment(arg: any): arg is parse5.CommentNode {
   );
 }
 
+/**
+ * arrayNonNullable.
+ *
+ * @param {T[]} items
+ * @returns {T[]}
+ */
 function arrayNonNullable<T>(items: T[]): T[] {
   return items.filter((item: T): item is NonNullable<T> => item != null);
 }
 
+/**
+ * rootNode.
+ *
+ * @param {parse5.DocumentFragment} node
+ * @returns {parse5.DocumentFragment}
+ */
 function rootNode(node: parse5.DocumentFragment): parse5.DocumentFragment {
   if (node.nodeName === "#document-fragment")
     node.childNodes = childNodes(node.childNodes, 0);
@@ -82,6 +94,12 @@ export function childNode(
   return node;
 }
 
+/**
+ * commentNode.
+ *
+ * @param {parse5.CommentNode} node
+ * @param {number} level
+ */
 export function commentNode(
   node: parse5.CommentNode,
   // plugin: SilverHtmlPlugin,
@@ -91,6 +109,12 @@ export function commentNode(
   return node;
 }
 
+/**
+ * textNode.
+ *
+ * @param {parse5.TextNode} node
+ * @param {number} level
+ */
 export function textNode(
   node: parse5.TextNode,
   // plugin: SilverHtmlPlugin,
@@ -100,6 +124,12 @@ export function textNode(
   return node;
 }
 
+/**
+ * elementNode.
+ *
+ * @param {parse5.Element} node
+ * @param {number} level
+ */
 export function elementNode(
   node: parse5.Element,
   // plugin: SilverHtmlPlugin,
@@ -138,6 +168,10 @@ export function childNodes(
 
 /**
  * silverHtml.
+ *
+ * @param {string} html
+ * @param {SilverHtmlConfig} config
+ * @param {SilverHtmlPlugin} plugins
  */
 export function silverHtml(
   html: string,
