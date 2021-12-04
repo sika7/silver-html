@@ -95,12 +95,7 @@ export function commentNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  // node = PluginManager.processElement({ ...node }, level);
-  // node.attrs = PluginManager.processAttributes(
-  //   [...node.attrs],
-  //   node.tagName,
-  //   level
-  // );
+  node = PluginManager.processComment({ ...node }, level);
   return node;
 }
 
@@ -109,12 +104,7 @@ export function textNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  // node = PluginManager.processElement({ ...node }, level);
-  // node.attrs = PluginManager.processAttributes(
-  //   [...node.attrs],
-  //   node.tagName,
-  //   level
-  // );
+  node = PluginManager.processText({ ...node }, level);
   return node;
 }
 

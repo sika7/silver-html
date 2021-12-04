@@ -1,7 +1,4 @@
-import {
-  SilverHtmlPlugin,
-  SilverHtmlPluginManager,
-} from "interface";
+import { SilverHtmlPlugin, SilverHtmlPluginManager } from "interface";
 
 import * as parse5 from "parse5";
 
@@ -10,7 +7,9 @@ class PluginManagerClass {
 
   funcs: SilverHtmlPluginManager = {
     ChildNode: [],
-    Element: [],
+    CommentNode: [],
+    TextNode: [],
+    ElementNode: [],
     Attribute: [],
     Attributes: [],
   };
@@ -19,35 +18,56 @@ class PluginManagerClass {
 
   init(name: string, plugin: SilverHtmlPlugin) {
     this.name = name;
+    this.resetFunction();
 
     // functions set
-    const { ChildNode, Element, Attribute, Attributes } = plugin;
+    const { ChildNode, CommentNode, ElementNode, TextNode, Attribute, Attributes } = plugin;
     if (ChildNode) this.funcs["ChildNode"] = ChildNode;
-    if (Element) this.funcs["Element"] = Element;
+    if (CommentNode) this.funcs["CommentNode"] = CommentNode;
+    if (TextNode) this.funcs["TextNode"] = TextNode;
+    if (ElementNode) this.funcs["ElementNode"] = ElementNode;
     if (Attributes) this.funcs["Attributes"] = Attributes;
     if (Attribute) this.funcs["Attribute"] = Attribute;
     return this;
   }
 
   resetFunction() {
-    this.funcs["ChildNode"] = [];
-    this.funcs["Element"] = [];
-    this.funcs["Attributes"] = [];
-    this.funcs["Attribute"] = [];
+    this.funcs = {
+      ChildNode: [],
+      CommentNode: [],
+      ElementNode: [],
+      TextNode: [],
+      Attribute: [],
+      Attributes: [],
+    };
   }
 
   processChildNode(node: parse5.ChildNode[], level: number) {
     this.funcs["ChildNode"].map((func) => {
-      node = func.function(node, level)
+      node = func.function(node, level);
     });
-    return node
+    return node;
   }
 
   processElement(node: parse5.Element, level: number): parse5.Element {
-    this.funcs["Element"].map((func) => {
-      node = func.function(node, level)
+    this.funcs["ElementNode"].map((func) => {
+      node = func.function(node, level);
     });
-    return node
+    return node;
+  }
+
+  processComment(node: parse5.CommentNode, level: number): parse5.CommentNode {
+    this.funcs["CommentNode"].map((func) => {
+      node = func.function(node, level);
+    });
+    return node;
+  }
+
+  processText(node: parse5.TextNode, level: number): parse5.TextNode {
+    this.funcs["TextNode"].map((func) => {
+      node = func.function(node, level);
+    });
+    return node;
   }
 
   processAttributes(
@@ -55,10 +75,10 @@ class PluginManagerClass {
     tagName: string,
     level: number
   ) {
-    this.funcs["Attributes"].map((func) =>
-      attribute = func.function(attribute, tagName, level)
+    this.funcs["Attributes"].map(
+      (func) => (attribute = func.function(attribute, tagName, level))
     );
-    return attribute
+    return attribute;
   }
 
   processAttribute(
@@ -66,10 +86,10 @@ class PluginManagerClass {
     tagName: string,
     level: number
   ) {
-    this.funcs["Attribute"].map((func) =>
-      attribute = func.function(attribute, tagName, level)
+    this.funcs["Attribute"].map(
+      (func) => (attribute = func.function(attribute, tagName, level))
     );
-    return attribute
+    return attribute;
   }
 }
 

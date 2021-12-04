@@ -32,15 +32,19 @@ export interface AttributesFunction {
 
 export interface SilverHtmlPluginManager {
   ChildNode: ChildNodeFunction[];
-  Element: ElementFunction[];
+  CommentNode: CommentFunction[];
+  TextNode: TextFunction[];
+  ElementNode: ElementFunction[];
   Attribute: AttributeFunction[];
   Attributes: AttributesFunction[];
 }
 
 export interface SilverHtmlPlugin {
   name: string,
-  ChildNode: ChildNodeFunction[];
-  Element?: ElementFunction[];
+  ChildNode?: ChildNodeFunction[];
+  CommentNode?: CommentFunction[];
+  TextNode?: TextFunction[];
+  ElementNode?: ElementFunction[];
   Attribute?: AttributeFunction[];
   Attributes?: AttributesFunction[];
 }
