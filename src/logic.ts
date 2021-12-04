@@ -18,21 +18,51 @@ export function implementsParse5Elemtnt(arg: any): arg is parse5.Element {
   );
 }
 
+/**
+ * implementsParse5Text.
+ *
+ * @param {any} arg
+ * @returns {arg is parse5.TextNode}
+ */
+export function implementsParse5Text(arg: any): arg is parse5.TextNode {
+  return (
+    arg !== null &&
+    typeof arg === "object" &&
+    typeof arg.nodeName === "string" &&
+    arg.nodeName === "#text"
+  );
+}
+
+/**
+ * implementsParse5Comment.
+ *
+ * @param {any} arg
+ * @returns {arg is parse5.CommentNode}
+ */
+export function implementsParse5Comment(arg: any): arg is parse5.CommentNode {
+  return (
+    arg !== null &&
+    typeof arg === "object" &&
+    typeof arg.nodeName === "string" &&
+    arg.nodeName === "#comment"
+  );
+}
+
 // function executeFunction<T>(item: T, func: Function): T {
 //   return func(item);
 // }
-// 
+//
 // function executeFunctions<T>(items: T[], func: Function): T[] {
 //   return arrayNonNullable<T>(items.map((item) => func(item)));
 // }
-// 
+//
 // function arrayNonNullable<T>(items: T[]): T[] {
 //   return items.filter((item: T): item is NonNullable<T> => item != null);
 // }
 
 function rootNode(node: parse5.DocumentFragment): parse5.DocumentFragment {
   if (node.nodeName === "#document-fragment")
-    node.childNodes = childElementNodes(node.childNodes, 0);
+    node.childNodes = childNodes(node.childNodes, 0);
   return node;
 }
 
@@ -43,20 +73,63 @@ function rootNode(node: parse5.DocumentFragment): parse5.DocumentFragment {
  * @param {silverHtmlPlugin} plugin
  * @param {number} level
  */
-export function elementNode(
+export function childNode(
   node: parse5.ChildNode,
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
   if (implementsParse5Elemtnt(node)) {
-    node = PluginManager.processElement({ ...node }, level);
-    node.attrs = PluginManager.processAttributes(
-      [...node.attrs],
-      node.tagName,
-      level
-    );
-    node.childNodes = childElementNodes(node.childNodes, level);
+    return elementNode(node, level);
   }
+  if (implementsParse5Text(node)) {
+    return textNode(node, level);
+  }
+  if (implementsParse5Comment(node)) {
+    return commentNode(node, level);
+  }
+  return node;
+}
+
+export function commentNode(
+  node: parse5.CommentNode,
+  // plugin: SilverHtmlPlugin,
+  level: number
+) {
+  // node = PluginManager.processElement({ ...node }, level);
+  // node.attrs = PluginManager.processAttributes(
+  //   [...node.attrs],
+  //   node.tagName,
+  //   level
+  // );
+  return node;
+}
+
+export function textNode(
+  node: parse5.TextNode,
+  // plugin: SilverHtmlPlugin,
+  level: number
+) {
+  // node = PluginManager.processElement({ ...node }, level);
+  // node.attrs = PluginManager.processAttributes(
+  //   [...node.attrs],
+  //   node.tagName,
+  //   level
+  // );
+  return node;
+}
+
+export function elementNode(
+  node: parse5.Element,
+  // plugin: SilverHtmlPlugin,
+  level: number
+) {
+  node = PluginManager.processElement({ ...node }, level);
+  node.attrs = PluginManager.processAttributes(
+    [...node.attrs],
+    node.tagName,
+    level
+  );
+  node.childNodes = childNodes(node.childNodes, level);
   return node;
 }
 
@@ -67,14 +140,14 @@ export function elementNode(
  * @param {silverHtmlPlugin} plugin
  * @param {number} level
  */
-export function childElementNodes(
+export function childNodes(
   child: parse5.ChildNode[],
   // plugin: SilverHtmlPlugin,
   level: number
 ): parse5.ChildNode[] {
   if (!Array.isArray(child)) return child;
   // child = PluginManager.processElements([...child], level);
-  return child.map((node) => elementNode(node, level + 1));
+  return child.map((node) => childNode(node, level + 1));
 }
 
 /**
