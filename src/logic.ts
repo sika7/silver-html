@@ -1,5 +1,6 @@
 import * as parse5 from "parse5";
-import { SilverHtmlChildNode, SilverHtmlConfig, SilverHtmlNode, SilverHtmlPlugin } from "./interface";
+import { SilverHtmlConfig, SilverHtmlPlugin } from "./interface";
+import { PluginManager } from "./plugin";
 
 /**
  * implementsParse5Elemtnt.
@@ -17,16 +18,22 @@ export function implementsParse5Elemtnt(arg: any): arg is parse5.Element {
   );
 }
 
-function executeFunction<T>(item: T, func: Function): T {
-  return func(item)
-}
+// function executeFunction<T>(item: T, func: Function): T {
+//   return func(item);
+// }
+// 
+// function executeFunctions<T>(items: T[], func: Function): T[] {
+//   return arrayNonNullable<T>(items.map((item) => func(item)));
+// }
+// 
+// function arrayNonNullable<T>(items: T[]): T[] {
+//   return items.filter((item: T): item is NonNullable<T> => item != null);
+// }
 
-function executeFunctions<T>(items: T[], func: Function): T[] {
-  return arrayNonNullable<T>(items.map(item => func(item)))
-}
-
-function arrayNonNullable<T>(items: T[]): T[] {
-  return items.filter((item: T): item is NonNullable<T> => item != null)
+function rootNode(node: parse5.DocumentFragment): parse5.DocumentFragment {
+  if (node.nodeName === "#document-fragment")
+    node.childNodes = childElementNodes(node.childNodes, 0);
+  return node;
 }
 
 /**
@@ -37,12 +44,19 @@ function arrayNonNullable<T>(items: T[]): T[] {
  * @param {number} level
  */
 export function elementNode(
-  node: SilverHtmlNode,
-  plugin: SilverHtmlPlugin,
+  node: parse5.ChildNode,
+  // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  // run plugin.
-  node = parse5NodeAdapter(node, plugin, level);
+  if (implementsParse5Elemtnt(node)) {
+    node = PluginManager.processElement({ ...node }, level);
+    node.attrs = PluginManager.processAttributes(
+      [...node.attrs],
+      node.tagName,
+      level
+    );
+    node.childNodes = childElementNodes(node.childNodes, level);
+  }
   return node;
 }
 
@@ -54,64 +68,13 @@ export function elementNode(
  * @param {number} level
  */
 export function childElementNodes(
-  child: SilverHtmlChildNode[],
-  plugin: SilverHtmlPlugin,
+  child: parse5.ChildNode[],
+  // plugin: SilverHtmlPlugin,
   level: number
-) {
+): parse5.ChildNode[] {
   if (!Array.isArray(child)) return child;
-  const { Elements } = plugin;
-  if (Elements) child = executeFunction<SilverHtmlChildNode[]>([...child], (items: any) => Elements(items, level));
-  return executeFunctions<SilverHtmlChildNode>(child, (node: any) => elementNode(node, plugin, level + 1));
-}
-
-/**
- * parse5NodeAdapter.
- */
-export function parse5NodeAdapter(
-  node: SilverHtmlNode,
-  plugin: SilverHtmlPlugin,
-  level: number = 0
-) {
-  if (implementsParse5Elemtnt(node)) {
-    const { Element, AttributeList, Attribute} = plugin;
-    if (Element) node = executeFunction<parse5.Element>({ ...node }, (node: parse5.Element) => Element(node, level)) ;
-    if (AttributeList && node.attrs)
-      node.attrs = AttributeList([...node.attrs], node.tagName);
-    if (Attribute && node.attrs) {
-      node.attrs = node.attrs.map((attr: parse5.Attribute) =>
-        Attribute(attr, node.nodeName)
-      );
-    }
-    if (node.childNodes)
-      node.childNodes = childElementNodes(node.childNodes, plugin, level);
-  }
-  return node;
-}
-
-/**
- * parseHtml. // htmlの文字列をノードに変換する
- *
- * @param {string} html
- * @param {string} parserName
- */
-export function parseHtml(html: string, parserName: string = "parse5"): SilverHtmlNode {
-  if (parserName === "parse5") return parse5.parseFragment(html);
-  throw new Error("not found parser.");
-}
-
-/**
- * serializeNode. // ノードからhtmlに変換する
- *
- * @param {SilverHtmlNode} node
- * @param {string} parserName
- * @returns {string}
- */
-export function serializeNode(
-  node: SilverHtmlNode,
-  parserName: string = "parse5"
-): string {
-  if (parserName === "parse5") return parse5.serialize(node);
-  throw new Error("not found serialize.");
+  // child = PluginManager.processElements([...child], level);
+  return child.map((node) => elementNode(node, level + 1));
 }
 
 /**
@@ -122,13 +85,14 @@ export function silverHtml(
   config: SilverHtmlConfig,
   plugins: SilverHtmlPlugin[]
 ) {
-  let node = parseHtml(html);
+  let node = parse5.parseFragment(html);
   plugins.map((plugin) => {
+    PluginManager.init(plugin.name, plugin);
     try {
-      node = elementNode(node, plugin, 0);
+      node = rootNode(node);
     } catch (e) {
-      throw new Error(`${plugin.pluginName} plugin error.`);
+      throw new Error(`${plugin.name} plugin error.`);
     }
   });
-  return serializeNode(node);
+  return parse5.serialize(node);
 }

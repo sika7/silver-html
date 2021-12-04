@@ -1,39 +1,48 @@
 import * as parse5 from 'parse5'
 
-export interface ElementFunc {
-  (node: SilverHtmlElement, level: number): SilverHtmlElement;
+export interface ChildNodeFunction {
+  name: string;
+  function: (elements: parse5.ChildNode[], level: number) => parse5.ChildNode[];
 }
 
-export interface ElementsFunc {
-  (elements: SilverHtmlElement[], level: number): SilverHtmlElement[];
+export interface ElementFunction {
+  name: string;
+  function: (node: parse5.Element, level: number) => parse5.Element;
 }
 
-export interface AttributeFunc {
-  (attribute: SilverHtmlAttribute, tagName: string): SilverHtmlAttribute;
+export interface TextFunction {
+  name: string;
+  function: (node: parse5.TextNode, level: number) => parse5.TextNode;
 }
 
-export interface AttributeListFunc {
-  (attributes: SilverHtmlAttribute[], tagName: string): SilverHtmlAttribute[];
+export interface CommentFunction {
+  name: string;
+  function: (node: parse5.CommentNode, level: number) => parse5.CommentNode;
 }
 
-export interface CommentFunc {
-  (comment: string, elements: string): string;
+export interface AttributeFunction {
+  name: string;
+  function: (attribute: parse5.Attribute, tagName: string, level: number) => parse5.Attribute;
 }
 
-export type SilverHtmlElement = parse5.Element
+export interface AttributesFunction {
+  name: string;
+  function: (attributes: parse5.Attribute[], tagName: string, level: number) => parse5.Attribute[];
+}
 
-export type SilverHtmlAttribute = parse5.Attribute
-
-export type SilverHtmlNode = parse5.Node
-export type SilverHtmlChildNode = parse5.ChildNode
+export interface SilverHtmlPluginManager {
+  ChildNode: ChildNodeFunction[];
+  Element: ElementFunction[];
+  Attribute: AttributeFunction[];
+  Attributes: AttributesFunction[];
+}
 
 export interface SilverHtmlPlugin {
-  pluginName: string;
-  // Comment?: CommentFunc;
-  Elements?: ElementsFunc;
-  Element?: ElementFunc;
-  Attribute?: AttributeFunc;
-  AttributeList?: AttributeListFunc;
+  name: string,
+  ChildNode: ChildNodeFunction[];
+  Element?: ElementFunction[];
+  Attribute?: AttributeFunction[];
+  Attributes?: AttributesFunction[];
 }
 
 export interface SilverHtmlConfig {}
