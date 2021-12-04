@@ -21,7 +21,14 @@ class PluginManagerClass {
     this.resetFunction();
 
     // functions set
-    const { ChildNode, CommentNode, ElementNode, TextNode, Attribute, Attributes } = plugin;
+    const {
+      ChildNode,
+      CommentNode,
+      ElementNode,
+      TextNode,
+      Attribute,
+      Attributes,
+    } = plugin;
     if (ChildNode) this.funcs["ChildNode"] = ChildNode;
     if (CommentNode) this.funcs["CommentNode"] = CommentNode;
     if (TextNode) this.funcs["TextNode"] = TextNode;

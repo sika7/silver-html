@@ -48,17 +48,9 @@ export function implementsParse5Comment(arg: any): arg is parse5.CommentNode {
   );
 }
 
-// function executeFunction<T>(item: T, func: Function): T {
-//   return func(item);
-// }
-//
-// function executeFunctions<T>(items: T[], func: Function): T[] {
-//   return arrayNonNullable<T>(items.map((item) => func(item)));
-// }
-//
-// function arrayNonNullable<T>(items: T[]): T[] {
-//   return items.filter((item: T): item is NonNullable<T> => item != null);
-// }
+function arrayNonNullable<T>(items: T[]): T[] {
+  return items.filter((item: T): item is NonNullable<T> => item != null);
+}
 
 function rootNode(node: parse5.DocumentFragment): parse5.DocumentFragment {
   if (node.nodeName === "#document-fragment")
@@ -119,6 +111,10 @@ export function elementNode(
     node.tagName,
     level
   );
+  node.attrs = node.attrs.map((attr) =>
+    PluginManager.processAttribute(attr, node.tagName, level)
+  );
+  node.attrs = arrayNonNullable(node.attrs)
   node.childNodes = childNodes(node.childNodes, level);
   return node;
 }
@@ -136,8 +132,8 @@ export function childNodes(
   level: number
 ): parse5.ChildNode[] {
   if (!Array.isArray(child)) return child;
-  // child = PluginManager.processElements([...child], level);
-  return child.map((node) => childNode(node, level + 1));
+  child = PluginManager.processChildNode([...child], level);
+  return arrayNonNullable(child.map((node) => childNode(node, level + 1)));
 }
 
 /**
