@@ -136,11 +136,7 @@ export function elementNode(
   level: number
 ) {
   node = PluginManager.processElement(node, level);
-  node.attrs = PluginManager.processAttributes(
-    node.attrs,
-    node.tagName,
-    level
-  );
+  node.attrs = PluginManager.processAttributes(node.attrs, node.tagName, level);
   node.attrs = node.attrs.map((attr) =>
     PluginManager.processAttribute(attr, node.tagName, level)
   );

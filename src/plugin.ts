@@ -1,4 +1,4 @@
-import { SilverHtmlPlugin, SilverHtmlPluginManager } from "interface";
+import { SilverHtmlPlugin, SilverHtmlPluginManager } from "./interface";
 
 import * as parse5 from "parse5";
 
