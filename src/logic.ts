@@ -105,7 +105,7 @@ export function commentNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  node = PluginManager.processComment({ ...node }, level);
+  node = PluginManager.processComment(node, level);
   return node;
 }
 
@@ -120,7 +120,7 @@ export function textNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  node = PluginManager.processText({ ...node }, level);
+  node = PluginManager.processText(node, level);
   return node;
 }
 
@@ -135,16 +135,16 @@ export function elementNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  node = PluginManager.processElement({ ...node }, level);
+  node = PluginManager.processElement(node, level);
   node.attrs = PluginManager.processAttributes(
-    [...node.attrs],
+    node.attrs,
     node.tagName,
     level
   );
   node.attrs = node.attrs.map((attr) =>
     PluginManager.processAttribute(attr, node.tagName, level)
   );
-  node.attrs = arrayNonNullable(node.attrs)
+  node.attrs = arrayNonNullable(node.attrs);
   node.childNodes = childNodes(node.childNodes, level);
   return node;
 }
@@ -162,7 +162,7 @@ export function childNodes(
   level: number
 ): parse5.ChildNode[] {
   if (!Array.isArray(child)) return child;
-  child = PluginManager.processChildNode([...child], level);
+  child = PluginManager.processChildNode(child, level);
   return arrayNonNullable(child.map((node) => childNode(node, level + 1)));
 }
 
