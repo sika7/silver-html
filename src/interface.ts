@@ -22,7 +22,7 @@ export interface SilverHtmlPluginManager {
 }
 
 export interface SilverHtmlPlugin {
-  name: string,
+  pluginName: string,
   CommentNode?: CommentFunction[];
   TextNode?: TextFunction[];
   ElementNode?: ElementFunction[];

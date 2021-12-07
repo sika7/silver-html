@@ -4,6 +4,7 @@ import * as parse5 from "parse5";
 
 class PluginManagerClass {
   name: string = "none";
+  functionName: string = ""
 
   funcs: SilverHtmlPluginManager = {
     CommentNode: [],
@@ -38,24 +39,39 @@ class PluginManagerClass {
   }
 
   processElement(node: parse5.Element | null, level: number): parse5.Element | null {
-    this.funcs["ElementNode"].map((func) => {
-      if (node) node = func.function(node, level);
-      if (!node) return
-    });
+    try {
+      this.funcs["ElementNode"].map((func) => {
+        this.functionName = func.name
+        if (node) node = func.function(node, level);
+        if (!node) return
+      });
+    } catch (error) {
+      throw new Error(`${this.functionName} error.`);
+    }
     return node;
   }
 
   processComment(node: parse5.CommentNode, level: number): parse5.CommentNode {
-    this.funcs["CommentNode"].map((func) => {
-      node = func.function(node, level);
-    });
+    try {
+      this.funcs["CommentNode"].map((func) => {
+        this.functionName = func.name
+        node = func.function(node, level);
+      });
+    } catch (error) {
+      throw new Error(`${this.functionName} error.`);
+    }
     return node;
   }
 
   processText(node: parse5.TextNode, level: number): parse5.TextNode {
-    this.funcs["TextNode"].map((func) => {
-      node = func.function(node, level);
-    });
+    try {
+      this.funcs["TextNode"].map((func) => {
+        this.functionName = func.name
+        node = func.function(node, level);
+      });
+    } catch (error) {
+      throw new Error(`${this.functionName} error.`);
+    }
     return node;
   }
 }
