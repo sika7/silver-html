@@ -1,13 +1,8 @@
 import * as parse5 from 'parse5'
 
-export interface ChildNodeFunction {
-  name: string;
-  function: (elements: parse5.ChildNode[], level: number) => parse5.ChildNode[];
-}
-
 export interface ElementFunction {
   name: string;
-  function: (node: parse5.Element, level: number) => parse5.Element;
+  function: (node: parse5.Element, level: number) => parse5.Element | null;
 }
 
 export interface TextFunction {
@@ -31,7 +26,6 @@ export interface AttributesFunction {
 }
 
 export interface SilverHtmlPluginManager {
-  ChildNode: ChildNodeFunction[];
   CommentNode: CommentFunction[];
   TextNode: TextFunction[];
   ElementNode: ElementFunction[];
@@ -41,7 +35,6 @@ export interface SilverHtmlPluginManager {
 
 export interface SilverHtmlPlugin {
   name: string,
-  ChildNode?: ChildNodeFunction[];
   CommentNode?: CommentFunction[];
   TextNode?: TextFunction[];
   ElementNode?: ElementFunction[];

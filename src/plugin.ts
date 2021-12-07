@@ -6,7 +6,6 @@ class PluginManagerClass {
   name: string = "none";
 
   funcs: SilverHtmlPluginManager = {
-    ChildNode: [],
     CommentNode: [],
     TextNode: [],
     ElementNode: [],
@@ -22,14 +21,12 @@ class PluginManagerClass {
 
     // functions set
     const {
-      ChildNode,
       CommentNode,
       ElementNode,
       TextNode,
       Attribute,
       Attributes,
     } = plugin;
-    if (ChildNode) this.funcs["ChildNode"] = ChildNode;
     if (CommentNode) this.funcs["CommentNode"] = CommentNode;
     if (TextNode) this.funcs["TextNode"] = TextNode;
     if (ElementNode) this.funcs["ElementNode"] = ElementNode;
@@ -40,7 +37,6 @@ class PluginManagerClass {
 
   resetFunction() {
     this.funcs = {
-      ChildNode: [],
       CommentNode: [],
       ElementNode: [],
       TextNode: [],
@@ -49,16 +45,10 @@ class PluginManagerClass {
     };
   }
 
-  processChildNode(node: parse5.ChildNode[], level: number) {
-    this.funcs["ChildNode"].map((func) => {
-      node = func.function(node, level);
-    });
-    return node;
-  }
-
-  processElement(node: parse5.Element, level: number): parse5.Element {
+  processElement(node: parse5.Element | null, level: number): parse5.Element | null {
     this.funcs["ElementNode"].map((func) => {
-      node = func.function(node, level);
+      if (node) node = func.function(node, level);
+      if (!node) return
     });
     return node;
   }
