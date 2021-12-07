@@ -171,11 +171,11 @@ export function silverHtml(
 ) {
   let node = parse5.parseFragment(html);
   plugins.map((plugin) => {
-    PluginManager.init(plugin.name, plugin);
+    PluginManager.init(plugin.pluginName, plugin);
     try {
       node = rootNode(node);
     } catch (e) {
-      throw new Error(`${plugin.name} plugin error.`);
+      throw new Error(`${plugin.pluginName} plugin error. ${e}`);
     }
   });
   return parse5.serialize(node);
