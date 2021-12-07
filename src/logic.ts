@@ -137,11 +137,6 @@ export function elementNode(
 ) {
   node = PluginManager.processElement(node, level)!;
   if (!node) return
-  node.attrs = PluginManager.processAttributes(node.attrs, node.tagName, level);
-  node.attrs = node.attrs.map((attr) =>
-    PluginManager.processAttribute(attr, node.tagName, level)
-  );
-  node.attrs = arrayNonNullable(node.attrs);
   node.childNodes = childNodes(node.childNodes, level);
   return node;
 }

@@ -9,8 +9,6 @@ class PluginManagerClass {
     CommentNode: [],
     TextNode: [],
     ElementNode: [],
-    Attribute: [],
-    Attributes: [],
   };
 
   constructor() {}
@@ -24,14 +22,10 @@ class PluginManagerClass {
       CommentNode,
       ElementNode,
       TextNode,
-      Attribute,
-      Attributes,
     } = plugin;
     if (CommentNode) this.funcs["CommentNode"] = CommentNode;
     if (TextNode) this.funcs["TextNode"] = TextNode;
     if (ElementNode) this.funcs["ElementNode"] = ElementNode;
-    if (Attributes) this.funcs["Attributes"] = Attributes;
-    if (Attribute) this.funcs["Attribute"] = Attribute;
     return this;
   }
 
@@ -40,8 +34,6 @@ class PluginManagerClass {
       CommentNode: [],
       ElementNode: [],
       TextNode: [],
-      Attribute: [],
-      Attributes: [],
     };
   }
 
@@ -65,28 +57,6 @@ class PluginManagerClass {
       node = func.function(node, level);
     });
     return node;
-  }
-
-  processAttributes(
-    attribute: parse5.Attribute[],
-    tagName: string,
-    level: number
-  ) {
-    this.funcs["Attributes"].map(
-      (func) => (attribute = func.function(attribute, tagName, level))
-    );
-    return attribute;
-  }
-
-  processAttribute(
-    attribute: parse5.Attribute,
-    tagName: string,
-    level: number
-  ) {
-    this.funcs["Attribute"].map(
-      (func) => (attribute = func.function(attribute, tagName, level))
-    );
-    return attribute;
   }
 }
 
