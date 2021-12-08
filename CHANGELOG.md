@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## 1.0.1 - 2021-12-08
+### Fixed
+- Fix Multiple processing null error.
+
 ## 1.0.0 - 2021-12-08
 ### Changed
 - The official version has been released
