@@ -10,7 +10,9 @@ this package is Can be recursively deleted or modified. for CommentNode and Text
 npm install --save @sika7/silver-html
 ```
 
-**Step 2:** add functions.
+**Step 2:** add a functions or plugin.
+
+[use example more](./docs/index.md)
 
 ```js
 import { silverHtml } from '@sika7/silver-html'
@@ -36,7 +38,7 @@ console.log(result)
 
 plugin config.
 ```js
-{
+const plugin = {
   pluginName: 'pluginName'; // required.
   ElementNode?: (node, level)    => node | null;
   CommentNode?: (comment, level) => node | null;
