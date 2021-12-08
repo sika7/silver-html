@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## 1.0.0 - 2021-12-08
+### Changed
+- The official version has been released
+- Remove Processing for tag
+- Remove Processing for ChildNode
+- Remove Processing for attribute
+- Remove Processing for attributes
+
 ## 0.0.0 - 2021-12-01
 ### Added
 - Addition of basic functions
