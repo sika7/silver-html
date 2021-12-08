@@ -171,7 +171,6 @@ export function silverHtml(
     try {
       node = rootNode(node);
     } catch (e) {
-      console.log(e)
       throw new Error(`plugin: ${plugin.pluginName} ${e}`);
     }
   });

@@ -7,7 +7,7 @@ export interface ElementFunction {
 
 export interface TextFunction {
   name: string;
-  function: (node: parse5.TextNode, level: number) => parse5.TextNode;
+  function: (node: parse5.TextNode, level: number) => parse5.TextNode | null;
 }
 
 export interface CommentFunction {

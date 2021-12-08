@@ -197,4 +197,91 @@ describe("basic fucntion test.", () => {
       )
     ).toThrow("plugin: comment Error: remove error.");
   });
+
+  test("run test for textNode.", () => {
+    const result = silverHtml(
+      `
+<div>
+<div>test</div>
+</div>`,
+      testConfig,
+      [
+        {
+          pluginName: "hoge",
+          TextNode: [
+            {
+              name: "eee",
+              function: (text) => {
+                text.value = text.value.replace(/\r?\n/g, "");
+                return text;
+              },
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toBe(`<div><div>test</div></div>`);
+  });
+
+  test("run test for textNode if null.", () => {
+    const result = silverHtml(
+      `
+<div>
+  <div>test</div>
+  <ul>
+    <li>list1</li>
+    <li>list2</li>
+  </ul>
+</div>`,
+      testConfig,
+      [
+        {
+          pluginName: "hoge",
+          TextNode: [
+            {
+              name: "eee",
+              function: (text) => {
+                if (text.value === "list1") return null;
+                return text;
+              },
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toBe(
+      `
+<div>
+  <div>test</div>
+  <ul>
+    <li></li>
+    <li>list2</li>
+  </ul>
+</div>`
+    );
+  });
+
+  test("run test for textNode throw new Error.", () => {
+    expect(() =>
+      silverHtml(
+        `
+<div>test</div>
+`,
+        testConfig,
+        [
+          {
+            pluginName: "text",
+            TextNode: [
+              {
+                name: "remove",
+                function: () => {
+                  throw new Error("test error.");
+                },
+              },
+            ],
+          },
+        ]
+      )
+    ).toThrow("plugin: text Error: remove error.");
+  });
 });
