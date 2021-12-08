@@ -1,5 +1,52 @@
 # use example
 
+## Creating a plugin
+
+install dev
+
+```sh
+npm i -D @sika7/silver-html @types/parse5
+```
+
+### typescript
+
+```typescript
+import * as parse5 from "parse5";
+import { SilverHtmlPlugin } from "@sika7/silver-html";
+
+export function yourPluginName(opts: any): SilverHtmlPlugin {
+
+  return {
+    pluginName: 'your plugin name';
+    // The following required processing
+    CommentNode: []; // etc...
+    TextNode: [];
+    ElementNode: [{
+      name: "this function name",
+      function: (e: parse5.Element) => {
+        // const { hoge, fuga } = opts <- use your opts
+        return e
+      },
+    }];
+  }
+}
+```
+
+### use
+
+```typescript
+import { silverHtml, SilverHtmlConfig } from "@sika7/silver-html";
+import { yourPluginName } from "./path/to";
+
+const silverHtmlConfig: SilverHtmlConfig = {};
+
+const yourOpts = {}
+
+console.log(silverHtml('html', silverHtmlConfig, [
+  yourPluginName(yourOpts),
+]))
+```
+
 ## ElementNode
 
 ### change tag

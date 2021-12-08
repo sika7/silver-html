@@ -16,7 +16,7 @@ npm install --save @sika7/silver-html
 
 [use example more](./docs/index.md)
 
-```js
+```javascript
 import { silverHtml } from '@sika7/silver-html'
 
 const plugin = {
@@ -39,7 +39,7 @@ console.log(result)
 ## plugin
 
 plugin config.
-```js
+```javascript
 const plugin = {
   pluginName: 'pluginName'; // required.
   ElementNode?: (node, level)    => node | null;
