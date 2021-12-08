@@ -91,7 +91,6 @@ export function childNode(
   if (implementsParse5Comment(node)) {
     return commentNode(node, level);
   }
-  return node;
 }
 
 /**
@@ -105,8 +104,7 @@ export function commentNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  node = PluginManager.processComment(node, level);
-  return node;
+  return PluginManager.processComment(node, level)!;
 }
 
 /**
@@ -120,8 +118,7 @@ export function textNode(
   // plugin: SilverHtmlPlugin,
   level: number
 ) {
-  node = PluginManager.processText(node, level);
-  return node;
+  return PluginManager.processText(node, level);
 }
 
 /**
@@ -153,7 +150,6 @@ export function childNodes(
   // plugin: SilverHtmlPlugin,
   level: number
 ): parse5.ChildNode[] {
-  if (!Array.isArray(child)) return child;
   return arrayNonNullable<parse5.ChildNode>(child.map((node) => childNode(node, level + 1)!));
 }
 
@@ -175,7 +171,8 @@ export function silverHtml(
     try {
       node = rootNode(node);
     } catch (e) {
-      throw new Error(`${plugin.pluginName} plugin error. ${e}`);
+      console.log(e)
+      throw new Error(`plugin: ${plugin.pluginName} ${e}`);
     }
   });
   return parse5.serialize(node);

@@ -38,11 +38,11 @@ class PluginManagerClass {
     };
   }
 
-  processElement(node: parse5.Element | null, level: number): parse5.Element | null {
+  processElement(node: parse5.Element, level: number): parse5.Element | null {
     try {
       this.funcs["ElementNode"].map((func) => {
         this.functionName = func.name
-        if (node) node = func.function(node, level);
+        node = func.function(node, level)!;
         if (!node) return
       });
     } catch (error) {
@@ -51,11 +51,12 @@ class PluginManagerClass {
     return node;
   }
 
-  processComment(node: parse5.CommentNode, level: number): parse5.CommentNode {
+  processComment(node: parse5.CommentNode, level: number): parse5.CommentNode | null {
     try {
       this.funcs["CommentNode"].map((func) => {
         this.functionName = func.name
-        node = func.function(node, level);
+        node = func.function(node, level)!;
+        if (!node) return
       });
     } catch (error) {
       throw new Error(`${this.functionName} error.`);
@@ -63,11 +64,12 @@ class PluginManagerClass {
     return node;
   }
 
-  processText(node: parse5.TextNode, level: number): parse5.TextNode {
+  processText(node: parse5.TextNode, level: number): parse5.TextNode | null {
     try {
       this.funcs["TextNode"].map((func) => {
         this.functionName = func.name
-        node = func.function(node, level);
+        node = func.function(node, level)!;
+        if (!node) return
       });
     } catch (error) {
       throw new Error(`${this.functionName} error.`);

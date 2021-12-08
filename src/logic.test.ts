@@ -1,4 +1,3 @@
-import * as parse5 from "parse5";
 import { SilverHtmlConfig } from "./interface";
 import { silverHtml } from "./logic";
 
@@ -23,18 +22,18 @@ describe("basic fucntion test.", () => {
           pluginName: "hoge",
           ElementNode: [
             {
-              name: 'remove',
+              name: "remove",
               function: () => {
                 throw new Error("test error.");
               },
-            }
+            },
           ],
         },
       ])
-    ).toThrow("hoge plugin error.");
+    ).toThrow("plugin: hoge Error: remove error.");
   });
 
-  test("run test.", () => {
+  test("run test for ElementNode.", () => {
     const result = silverHtml(
       "<div><div>test</div><ul><li>list1</li><li>list2</li></ul></div>",
       testConfig,
@@ -43,12 +42,12 @@ describe("basic fucntion test.", () => {
           pluginName: "hoge",
           ElementNode: [
             {
-              name: 'aaa',
+              name: "change tag",
               function: (e) => {
                 e.tagName = "main";
                 return e;
-              }
-            }
+              },
+            },
           ],
         },
       ]
@@ -58,7 +57,7 @@ describe("basic fucntion test.", () => {
     );
   });
 
-  test("Element run test.", () => {
+  test("run test for attrs.", () => {
     const result = silverHtml(
       "<div><div>test</div><ul><li>list1</li><li>list2</li></ul></div>",
       testConfig,
@@ -67,7 +66,7 @@ describe("basic fucntion test.", () => {
           pluginName: "hoge",
           ElementNode: [
             {
-              name: 'hoge',
+              name: "hoge",
               function: (node, level) => {
                 if (level === 1) {
                   node.attrs = [
@@ -77,8 +76,8 @@ describe("basic fucntion test.", () => {
                 }
                 return node;
               },
-            }
-          ]
+            },
+          ],
         },
       ]
     );
@@ -87,7 +86,7 @@ describe("basic fucntion test.", () => {
     );
   });
 
-  test("Element run test. if null", () => {
+  test("run test for Element if null", () => {
     const result = silverHtml(
       "<div><div>test</div><ul><li>list1</li><li>list2</li></ul></div>",
       testConfig,
@@ -96,33 +95,53 @@ describe("basic fucntion test.", () => {
           pluginName: "hoge",
           ElementNode: [
             {
-              name: 'hoge',
+              name: "hoge",
               function: (node) => {
-                // if (node.tagName === "li") return null;
-                // if (node.tagName === "ul") return null;
+                if (node.tagName === "li") return null;
+                if (node.tagName === "ul") return null;
                 return node;
-              }
-            }
+              },
+            },
           ],
         },
       ]
     );
     expect(result).toEqual("<div><div>test</div></div>");
   });
-});
 
-function parse5Node(html: string, testFunc: Function) {
-  let node = parse5.parseFragment(html);
-  node = testFunc(node);
-  return parse5.serialize(node);
-}
-
-describe("internal function test.", () => {
-  test("test implementsParse5Elemtnt function.", () => {
+  test("run test for commentNode.", () => {
     const result = silverHtml(
-      `<div>
+      `
+<div>
+<!-- <div>test</div> -->
+</div>`,
+      testConfig,
+      [
+        {
+          pluginName: "hoge",
+          CommentNode: [
+            {
+              name: "eee",
+              function: (e) => {
+                return e;
+              },
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toBe(`
+<div>
+<!-- <div>test</div> -->
+</div>`);
+  });
+
+  test("run test for commentNode if null.", () => {
+    const result = silverHtml(
+      `
+<div>
   <div>test</div>
-  <!-- <div>test</div> -->
+<!-- <div>test</div> -->
   <ul>
     <li>list1</li>
     <li>list2</li>
@@ -132,17 +151,50 @@ describe("internal function test.", () => {
       [
         {
           pluginName: "hoge",
-          ElementNode: [
+          CommentNode: [
             {
-              name: 'eee',
-              function: (e) => {
-                return e;
-              }
-            }
+              name: "eee",
+              function: () => {
+                return null;
+              },
+            },
           ],
         },
       ]
     );
-    expect(result).toBe("<div><div></div><ul><li></li><li></li></ul></div>");
+    expect(result).toBe(`
+<div>
+  <div>test</div>
+
+  <ul>
+    <li>list1</li>
+    <li>list2</li>
+  </ul>
+</div>`);
+  });
+
+  test("run test for commentNode throw new Error.", () => {
+    expect(() =>
+      silverHtml(
+        `
+<div>test</div>
+<!-- <div>test</div> -->
+                 `,
+        testConfig,
+        [
+          {
+            pluginName: "comment",
+            CommentNode: [
+              {
+                name: "remove",
+                function: () => {
+                  throw new Error("test error.");
+                },
+              },
+            ],
+          },
+        ]
+      )
+    ).toThrow("plugin: comment Error: remove error.");
   });
 });

@@ -12,7 +12,7 @@ export interface TextFunction {
 
 export interface CommentFunction {
   name: string;
-  function: (node: parse5.CommentNode, level: number) => parse5.CommentNode;
+  function: (node: parse5.CommentNode, level: number) => parse5.CommentNode | null;
 }
 
 export interface SilverHtmlPluginManager {
