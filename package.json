@@ -1,6 +1,6 @@
 {
   "name": "@sika7/silver-html",
-  "version": "0.0.1-0",
+  "version": "1.0.0",
   "description": "this package is provides HTML recursive processing.",
   "main": "dist/index.js",
   "scripts": {
