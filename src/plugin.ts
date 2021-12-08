@@ -41,9 +41,9 @@ class PluginManagerClass {
   processElement(node: parse5.Element, level: number): parse5.Element | null {
     try {
       this.funcs["ElementNode"].map((func) => {
+        if (!node) return
         this.functionName = func.name
         node = func.function(node, level)!;
-        if (!node) return
       });
     } catch (error) {
       throw new Error(`${this.functionName} error.`);
@@ -54,9 +54,9 @@ class PluginManagerClass {
   processComment(node: parse5.CommentNode, level: number): parse5.CommentNode | null {
     try {
       this.funcs["CommentNode"].map((func) => {
+        if (!node) return
         this.functionName = func.name
         node = func.function(node, level)!;
-        if (!node) return
       });
     } catch (error) {
       throw new Error(`${this.functionName} error.`);
@@ -67,9 +67,9 @@ class PluginManagerClass {
   processText(node: parse5.TextNode, level: number): parse5.TextNode | null {
     try {
       this.funcs["TextNode"].map((func) => {
+        if (!node) return
         this.functionName = func.name
         node = func.function(node, level)!;
-        if (!node) return
       });
     } catch (error) {
       throw new Error(`${this.functionName} error.`);

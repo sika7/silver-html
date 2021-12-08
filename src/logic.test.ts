@@ -109,6 +109,35 @@ describe("basic fucntion test.", () => {
     expect(result).toEqual("<div><div>test</div></div>");
   });
 
+  test("run test for Element if null. multiple processing", () => {
+    const result = silverHtml(
+      "<div><div>test</div><ul><li>list1</li><li>list2</li></ul></div>",
+      testConfig,
+      [
+        {
+          pluginName: "hoge",
+          ElementNode: [
+            {
+              name: "remove ul",
+              function: (node) => {
+                if (node.tagName === "ul") return null;
+                return node;
+              },
+            },
+            {
+              name: "remove li",
+              function: (node) => {
+                if (node.tagName === "li") return null;
+                return node;
+              },
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toEqual("<div><div>test</div></div>");
+  });
+
   test("run test for commentNode.", () => {
     const result = silverHtml(
       `
@@ -156,6 +185,50 @@ describe("basic fucntion test.", () => {
               name: "eee",
               function: () => {
                 return null;
+              },
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toBe(`
+<div>
+  <div>test</div>
+
+  <ul>
+    <li>list1</li>
+    <li>list2</li>
+  </ul>
+</div>`);
+  });
+
+  test("run test for commentNode if null. multiple processing", () => {
+    const result = silverHtml(
+      `
+<div>
+  <div>test</div>
+<!-- <div>test</div> -->
+  <ul>
+    <li>list1</li>
+    <li>list2</li>
+  </ul>
+</div>`,
+      testConfig,
+      [
+        {
+          pluginName: "hoge",
+          CommentNode: [
+            {
+              name: "comment remove",
+              function: () => {
+                return null;
+              },
+            },
+            {
+              name: "comment change hoge",
+              function: (comment) => {
+                comment.data = 'hoge'
+                return comment;
               },
             },
           ],
@@ -256,6 +329,51 @@ describe("basic fucntion test.", () => {
   <ul>
     <li></li>
     <li>list2</li>
+  </ul>
+</div>`
+    );
+  });
+
+  test("run test for textNode if null. multiple processing", () => {
+    const result = silverHtml(
+      `
+<div>
+  <div>test</div>
+  <ul>
+    <li>list1</li>
+    <li>list2</li>
+  </ul>
+</div>`,
+      testConfig,
+      [
+        {
+          pluginName: "hoge",
+          TextNode: [
+            {
+              name: "eee",
+              function: (text) => {
+                if (text.value === "list1") return null;
+                return text;
+              },
+            },
+            {
+              name: "eee",
+              function: (text) => {
+                if (text.value === "list2") return null;
+                return text;
+              },
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toBe(
+      `
+<div>
+  <div>test</div>
+  <ul>
+    <li></li>
+    <li></li>
   </ul>
 </div>`
     );
